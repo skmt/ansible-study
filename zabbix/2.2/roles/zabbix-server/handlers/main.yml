@@ -1,0 +1,18 @@
+---
+- name: restart zabbix-server
+  service: name=zabbix-server state=restarted
+
+- name: create database
+  command: /usr/bin/mysql -uroot < \
+    create database zabbix character set utf8 collate utf8_bin; \
+    grant all privileges on zabbix.* to zabbix@localhost identified by 'zabbix';
+
+- name: create schema
+  command: /usr/bin/mysql uroot < /usr/share/doc/zabbix-server-mysql-2.2.9/create/schema.sql
+
+- name: create images
+  command: /usr/bin/mysql uroot < /usr/share/doc/zabbix-server-mysql-2.2.9/create/images.sql
+
+- name: create data
+  command: /usr/bin/mysql uroot < /usr/share/doc/zabbix-server-mysql-2.2.9/create/data.sql
+

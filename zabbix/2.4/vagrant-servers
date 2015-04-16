@@ -1,0 +1,13 @@
+[zabbix-agents]
+192.168.33.12
+192.168.33.13
+192.168.33.14
+
+[zabbix-server]
+192.168.33.11
+
+[zabbix-server-local]
+127.0.0.1
+[zabbix-server-local:vars]
+ansible_ssh_port=2222
+ansible_ssh_private_key_file=/Users/A12502/Temp/vagrantbox_by_packer/.vagrant/machines/default/virtualbox/private_key

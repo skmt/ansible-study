@@ -1,0 +1,13 @@
+---
+- name: Install Tools
+  yum: name={{ item }} state=installed
+  with_items:
+    - telnet
+    - net-tools
+    - bind-utils
+    - epel-release
+  tags: common-packages
+
+- name: Set up iptables rules
+  file: path=/etc/sysconfig/iptable state=absent
+  notify: stop iptables

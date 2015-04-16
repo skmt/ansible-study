@@ -1,0 +1,45 @@
+---
+- name: Disable Iptables
+  service: name=iptables state=stopped
+
+- name: Zabbix Repository Installation
+  action: command /bin/rpm -ivh http://repo.zabbix.com/zabbix/2.4/rhel/6/x86_64/zabbix-release-2.4-1.el6.noarch.rpm
+
+- name: Zabbix Installation
+  yum: name={{ item }} state=installed
+  with_items:
+    - telnet
+    - net-tools
+    - bind-utils
+    - epel-release
+    - httpd
+    - zabbix-server-mysql
+    - zabbix-web-mysql
+
+- name: Database Installation for CentOS6
+  yum: name={{ item }} state=installed
+  with_items:
+    - mysql-server
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+  notify: create database
+
+- name: Database Installation for CentOS7
+  yum: name={{ item }} state=installed
+  with_items:
+    - mariadb-server
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+  notify: create database
+
+- name: Copy Apache Configuration
+  file: src=zabbix.conf dest=/etc/httpd/conf.d/zabbix.conf
+  notify: restart httpd
+
+- name: Copy Zabbix Configuration
+  file: src=zabbix_server.conf dest=/etc/zabbix/zabbix_server.conf
+  notify: restart zabbix-server
+
+tasks:
+  - name: "shutdown CentOS 6 and 7 systems"
+    command: /sbin/shutdown -t now
+    when: ansible_distribution == "CentOS" and
+          (ansible_distribution_major_version == "6" or ansible_distribution_major_version == "7")

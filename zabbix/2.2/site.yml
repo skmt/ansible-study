@@ -1,0 +1,19 @@
+- name: Install Zabbix Server
+  hosts: zabbix-server
+  user: root
+  remote_user: vagrant
+  sudo: yes
+
+  roles:
+    - common
+    - zabbix-server
+
+- name: Install Zabbix Agent
+  hosts: zabbix-agents
+  user: root
+  remote_user: vagrant
+  sudo: yes
+
+  roles:
+    - common
+    - zabbix-agent
