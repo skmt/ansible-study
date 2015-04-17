@@ -1,0 +1,22 @@
+---
+- name: Enabling Apache
+  service: name=httpd enabled=yes
+  tags: enabling_service
+
+- name: Enabling MySQL
+  service: name=mysqld enabled=yes
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+  tags: enabling_service
+
+- name: Enabling Mariadb
+  service: name=mariadb enabled=yes
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+  tags: enabling_service
+
+- name: Enabling Zabbix-server
+  service: name=zabbix-server enabled=yes
+  tags: enabling_service
+
+- name: Enabling Zabbix-agent
+  service: name=zabbix-agent enabled=yes
+  tags: enabling_service

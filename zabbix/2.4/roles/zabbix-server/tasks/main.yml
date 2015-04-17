@@ -2,33 +2,55 @@
 - name: Disable Iptables
   service: name=iptables state=stopped
 
-- name: Zabbix Repository Installation
-  action: command /bin/rpm -ivh http://repo.zabbix.com/zabbix/2.4/rhel/6/x86_64/zabbix-release-2.4-1.el6.noarch.rpm
+- name: Zabbix Repository Installation for CentOS6
+  yum: name=http://repo.zabbix.com/zabbix/2.4/rhel/6/x86_64/zabbix-release-2.4-1.el6.noarch.rpm state=present
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
 
-- name: Zabbix Installation
-  yum: name={{ item }} state=installed
-  with_items:
-    - telnet
-    - net-tools
-    - bind-utils
-    - epel-release
-    - httpd
-    - zabbix-server-mysql
-    - zabbix-web-mysql
+- name: Zabbix Repository Installation for CentOS7
+  yum: name=http://repo.zabbix.com/zabbix/2.4/rhel/7/x86_64/zabbix-release-2.4-1.el7.noarch.rpm state=present
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
+
+- name: Zabbix Base Installation
+  yum: name=zabbix state=present
+
+- name: Get Zabbix Revision Information
+  shell: rpm -q zabbix | sed -e 's/zabbix-//' | sed -e 's/-.*//'
+  register: zabbix_version
 
 - name: Database Installation for CentOS6
-  yum: name={{ item }} state=installed
+  yum: name={{ item }} state=present
   with_items:
     - mysql-server
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
-  notify: create database
 
 - name: Database Installation for CentOS7
-  yum: name={{ item }} state=installed
+  yum: name={{ item }} state=present
   with_items:
     - mariadb-server
+    - mariadb-embedded
+    - mariadb-embedded-devel
+    - mariadb-libs
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
-  notify: create database
+
+- name: Zabbix Installation
+  yum: name={{ item }} state=present
+  with_items:
+    - httpd
+    - zabbix-server-mysql
+    - zabbix-web-mysql
+  notify:
+    - create database
+    - create schema
+    - create images
+    - create data
+
+- name: MySQL Restart
+  service: name=mysqld state=started
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"
+
+- name: MariaDB Restart
+  service: name=mariadb state=started
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
 
 - name: Copy Apache Configuration
   file: src=zabbix.conf dest=/etc/httpd/conf.d/zabbix.conf
@@ -38,8 +60,5 @@
   file: src=zabbix_server.conf dest=/etc/zabbix/zabbix_server.conf
   notify: restart zabbix-server
 
-tasks:
-  - name: "shutdown CentOS 6 and 7 systems"
-    command: /sbin/shutdown -t now
-    when: ansible_distribution == "CentOS" and
-          (ansible_distribution_major_version == "6" or ansible_distribution_major_version == "7")
+- include: enable_service.yml
+

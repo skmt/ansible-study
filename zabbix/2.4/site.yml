@@ -9,7 +9,9 @@
     - zabbix-server
 
 - name: Install Zabbix Agent
-  hosts: zabbix-agents-local
+  hosts:
+    - zabbix-server-local
+    - zabbix-agents-local
   user: root
   remote_user: vagrant
   sudo: yes

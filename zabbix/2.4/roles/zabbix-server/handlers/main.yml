@@ -3,16 +3,19 @@
   service: name=zabbix-server state=restarted
 
 - name: create database
-  command: /usr/bin/mysql -uroot < \
-    create database zabbix character set utf8 collate utf8_bin; \
-    grant all privileges on zabbix.* to zabbix@localhost identified by 'zabbix';
+  shell: echo "create database zabbix character set utf8 collate utf8_bin; grant all privileges on zabbix.* to 'zabbix'@'localhost' identified by 'zabbix';" | mysql -uroot
+#  notify: create schema
 
 - name: create schema
-  command: /usr/bin/mysql uroot < /usr/share/doc/zabbix-server-mysql-2.2.9/create/schema.sql
+  shell: mysql -uroot zabbix < /usr/share/doc/zabbix-server-mysql-{{ zabbix_version.stdout }}/create/schema.sql
+#  when: zabbix_version.stdout != ""
+#  notify: create images
 
 - name: create images
-  command: /usr/bin/mysql uroot < /usr/share/doc/zabbix-server-mysql-2.2.9/create/images.sql
+  shell: mysql -uroot zabbix < /usr/share/doc/zabbix-server-mysql-{{ zabbix_version.stdout }}/create/images.sql
+#  when: zabbix_version.stdout != ""
+#  notify: create data
 
 - name: create data
-  command: /usr/bin/mysql uroot < /usr/share/doc/zabbix-server-mysql-2.2.9/create/data.sql
-
+  shell: mysql -uroot zabbix < /usr/share/doc/zabbix-server-mysql-{{ zabbix_version.stdout }}/create/data.sql
+#  when: zabbix_version.stdout != ""
