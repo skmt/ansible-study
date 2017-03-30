@@ -1,0 +1,14 @@
+---
+- name: Deploy Spec File
+  copy: src=basic_spec.rb dest="/var/tmp/spec/localhost/basic_spec.rb" owner=root group=root mode=0644
+
+- name: Do ServerSpec
+  command: /usr/local/bin/rake spec:localhost
+  args:
+    chdir: "/var/tmp"
+  register: serverspec
+
+- name: Check ServerSpec Output
+  assert:
+    that:
+    - "'0 failures' in serverspec.stdout"

@@ -1,0 +1,4 @@
+---
+- name: Enable NGiNX Service
+  service: name=nginx state=started enabled=yes
+

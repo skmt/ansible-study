@@ -1,0 +1,57 @@
+---
+- name: Install Common Yum Packages for CentOS
+  yum: name={{ item }} state=latest
+  when: ansible_distribution == "CentOS"
+  with_items:
+    - kernel-headers
+    - kernel-devel
+    - gcc
+    - coreutils
+    - parted
+    - crontabs
+    - bind-utils
+    - wget
+    - telnet
+    - traceroute
+    - tcpdump
+    - net-snmp
+    - ntp
+    - vsftpd
+    - perl
+    - vim
+    - man
+    - mailx
+    - lsof
+    - hdparm
+    - sysstat
+    - unzip
+    - epel-release
+
+- name: Install Common Yum Packages for Amazon
+  yum: name={{ item }} state=latest
+  when: ansible_distribution == "Amazon"
+  with_items:
+    - kernel-headers
+    - kernel-devel
+    - gcc
+    - coreutils
+    - parted
+    - crontabs
+    - vixie-cron
+    - bind-utils
+    - wget
+    - telnet
+    - traceroute
+    - tcpdump
+    - net-snmp
+    - ntp
+    - vsftpd
+    - perl
+    - vim
+    - man
+    - mailx
+    - lsof
+    - hdparm
+    - sysstat
+    - unzip
+    - python-simplejson

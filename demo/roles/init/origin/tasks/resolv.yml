@@ -1,0 +1,22 @@
+---
+- name: Install Python Packages for CentOS
+  yum: name={{ item }} state=latest
+  when: ansible_distribution == "CentOS"
+  with_items:
+    - python2-pip
+    - NetworkManager-glib
+    - NetworkManager-libnm
+    - nm-connection-editor
+    - libsemanage-python
+    - policycoreutils-python
+
+#- name: Set DNS Resolver By NMCLI
+#  nmcli:
+#    conn_name: "System eth0"
+#    dns4: 127.0.0.1
+#    state: present
+
+#- name: Set Resolver Remotely
+#  command: 
+#    - nmcli c modify eth0 ipv4.ignore-auto-dns yes # First
+#    - nmcli c modify 'eth0' ipv4.dns '127.0.0.1' # Second

@@ -1,0 +1,6 @@
+---
+- name: Install bind packages
+  yum: name={{item}} state=latest
+  with_items:
+    - bind
+    - bind-chroot

@@ -1,0 +1,4 @@
+---
+- name: Enable BIND Service
+  service: name=named state=started enabled=yes
+

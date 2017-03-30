@@ -1,0 +1,19 @@
+---
+- name: Set timezone for Amazon
+  when: ansible_distribution == "Amazon"
+  replace: 
+    dest: /etc/sysconfig/clock
+    regexp: '^ZONE=\"UTC\"'
+    replace: 'ZONE="Asia/Tokyo"'
+
+- name: Set timezone for CentOS 7
+  when:
+    - ansible_distribution == "CentOS"
+    - ansible_distribution_major_version == "7"
+  command: timedatectl set-timezone Asia/Tokyo
+
+- name: Set timezone for CentOS prior to 6
+  when:
+    - ansible_distribution == "CentOS"
+    - ansible_distribution_major_version < "7"
+  command: ln -s /usr/share/zoneinfo/Asia/Tokyo /etc/localtime

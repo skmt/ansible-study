@@ -1,0 +1,44 @@
+---
+- name: Install Ruby Packages for CentOS
+  yum: name={{ item }} state=latest
+  when: ansible_distribution == "CentOS"
+  with_items:
+    - ruby
+    - python2-pip
+
+- name: Install Ruby Packages for Amazon Linux
+  yum: name={{ item }} state=latest
+  when: ansible_distribution == "Amazon"
+  with_items:
+    - ruby-devel
+
+- name: Install Gem Packages for Amazon Linxu
+  gem: name={{ item }} state=latest user_install=False
+  when: ansible_distribution == "Amazon"
+  with_items: 
+    - io-console
+
+- name: Install Gem Packages
+  gem: name={{ item }} state=latest user_install=False
+  with_items: 
+    - rake
+    - serverspec
+
+- name: Install pexpect > 3
+  pip: name=pexpect state=latest
+
+- name: Install ServerSpec
+  expect: 
+    command: /usr/local/bin/serverspec-init
+    timeout: 3
+    responses:
+      "Windows":
+        - "1"
+      "Exec":
+        - "2"
+    chdir: "/var/tmp"
+
+- name: Delete Sample Spec File
+  file:
+    path: /var/tmp/spec/localhost/sample_spec.rb
+    state: absent

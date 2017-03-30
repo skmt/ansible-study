@@ -1,0 +1,4 @@
+---
+- include: locale.yml
+- include: yum.yml
+- include: resolv.yml

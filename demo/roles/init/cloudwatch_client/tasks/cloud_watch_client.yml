@@ -1,0 +1,19 @@
+---
+- name: Install CloudWatchClient required package
+  yum: name={{ item }} state=latest
+  with_items:
+    - perl-Switch
+    - perl-DateTime
+    - perl-Sys-Syslog
+    - perl-LWP-Protocol-https
+
+- name: Deploy CloudWatchClient script files
+  copy: src={{ item.src }} dest={{ item.dest }} owner=root group=root mode=0755
+  with_items:
+    - { src: mon-get-instance-stats.pl,  dest: /usr/local/bin }
+    - { src: mon-put-instance-data.pl,   dest: /usr/local/bin }
+    - { src: AwsSignatureV4.pm,          dest: /usr/lib64/perl5 }
+    - { src: CloudWatchClient.pm,        dest: /usr/lib64/perl5 }
+
+- name: Set CloudWatchClient cron
+  copy: src=cloudwatch-monitoring-script dest=/etc/cron.d/ owner=root group=root mode=0644

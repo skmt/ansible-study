@@ -1,0 +1,2 @@
+---
+- include: serverspec_test.yml
